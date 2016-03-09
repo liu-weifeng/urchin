@@ -5,6 +5,7 @@ import eventlet.wsgi
 import greenlet
 import webob.dec
 import webob.exc
+from urchin import wsgi
 
 class ServiceBase(object):
 
@@ -24,69 +25,51 @@ class ProcessLauncher(object):
 class WSGIService(object):
     """wsgi server"""
 
-    def __init__(self, name, app, host='0.0.0.0', port=0, pool_size=None,
-                       protocol=eventlet.wsgi.HttpProtocol, backlog=128,
-                       use_ssl=False, max_url_len=None):
+    def __init__(self, name, loader=None, use_ssl=False, max_url_len=None):
+        """Initialize, but do not start the WSGI server.
+
+        :param name: The name of the WSGI server given to the loader.
+        :param loader: Loads the WSGI application using the given name.
+        :returns: None
+
+        """
         self.name = name
-        self.app = app
-        self._server = None
-        self._protocol = protocol
-        self.pool_size = pool_size or self.default_pool_size
-        self._pool = eventlet.GreenPool(self.pool_size)
-        self._use_ssl = use_ssl
-        self._max_url_len = max_url_len
-        self.client_socket_timeout = None
-
-        bind_addr = (host, port)
-        # TODO(dims): eventlet's green dns/socket module does not actually
-        # support IPv6 in getaddrinfo(). We need to get around this in the
-        # future or monitor upstream for a fix
-        try:
-            info = socket.getaddrinfo(bind_addr[0],
-                                      bind_addr[1],
-                                      socket.AF_UNSPEC,
-                                      socket.SOCK_STREAM)[0]
-            family = info[0]
-            bind_addr = info[-1]
-        except Exception:
-            family = socket.AF_INET
-
-        try:
-            self._socket = eventlet.listen(bind_addr, family, backlog=backlog)
-        except EnvironmentError:
-
-            raise
-
-        (self.host, self.port) = self._socket.getsockname()[0:2]
+        # NOTE(danms): Name can be metadata, os_compute, or ec2, per
+        # nova.service's enabled_apis
+        self.binary = 'nova-%s' % name
+        self.topic = None
+        self.manager = self._get_manager()
+        # self.loader = loader or wsgi.Loader()
+        self.app = self.loader.load_app(name)
+        # inherit all compute_api worker counts from osapi_compute
+        if name.startswith('openstack_compute_api'):
+            wname = 'osapi_compute'
+        else:
+            wname = name
+        self.host = "0.0.0.0"
+        self.port = 8080
+        self.workers = 1
+        self.use_ssl = use_ssl
+        self.server = wsgi.Server(name,
+                                  self.app,
+                                  host=self.host,
+                                  port=self.port,
+                                  use_ssl=self.use_ssl,
+                                  max_url_len=max_url_len)
+        # Pull back actual port used
+        self.port = self.server.port
+        self.backdoor_port = None
 
     def start(self):
-        dup_socket = self._socket.dup()
-        dup_socket.setsockopt(socket.SOL_SOCKET,
-                              socket.SO_REUSEADDR, 1)
-        # sockets can hang around forever without keepalive
-        dup_socket.setsockopt(socket.SOL_SOCKET,
-                              socket.SO_KEEPALIVE, 1)
 
-        # This option isn't available in the OS X version of eventlet
-        if hasattr(socket, 'TCP_KEEPIDLE'):
-            dup_socket.setsockopt(socket.IPPROTO_TCP,
-                                  socket.TCP_KEEPIDLE,
-                                  500)
-        wsgi_kwargs = {
-            'func': eventlet.wsgi.server,
-            'sock': dup_socket,
-            'site': self.app,
-            'protocol': self._protocol,
-            'custom_pool': self._pool,
-            'log': self._logger,
-            'debug': False,
-            'socket_timeout': self.client_socket_timeout
-            }
-
-        if self._max_url_len:
-            wsgi_kwargs['url_length_limit'] = self._max_url_len
-
-        self._server = eventlet.spawn(**wsgi_kwargs)
+        if self.manager:
+            self.manager.init_host()
+            self.manager.pre_start_hook()
+            if self.backdoor_port is not None:
+                self.manager.backdoor_port = self.backdoor_port
+        self.server.start()
+        if self.manager:
+            self.manager.post_start_hook()
 
     def reset(self):
         """Reset server greenpool size to default.
@@ -97,33 +80,17 @@ class WSGIService(object):
         self._pool.resize(self.pool_size)
 
     def stop(self):
-        """Stop this server.
-
-        This is not a very nice action, as currently the method by which a
-        server is stopped is by killing its eventlet.
+        """Stop serving this API.
 
         :returns: None
 
         """
-        # LOG.info(_LI("Stopping WSGI server."))
-
-        if self._server is not None:
-            # Resize pool to stop new requests from being processed
-            self._pool.resize(0)
-            self._server.kill()
+        self.server.stop()
 
     def wait(self):
-        """Block, until the server has stopped.
-
-        Waits on the server's eventlet to finish, then returns.
+        """Wait for the service to stop serving this API.
 
         :returns: None
 
         """
-        try:
-            if self._server is not None:
-                self._pool.waitall()
-                self._server.wait()
-        except greenlet.GreenletExit:
-            # LOG.info(_LI("WSGI server has stopped."))
-            pass
+        self.server.wait()

@@ -1,5 +1,11 @@
 from urchin.wsgi import Middleware
 import webob.dec
+import eventlet
+import six
+import abc
+import socket
+from urchin import utils
+from urchin import wsgi
 
 
 class Request(webob.Request):
@@ -7,7 +13,7 @@ class Request(webob.Request):
         super(Request, self).__init__(environ, *args, **kwargs)
 
 
-class WSGIServer(Middleware):
+class WSGIServer(wsgi.Application):
     @webob.dec.wsgify(RequestClass=Request)
     def __call__(self, request):
         args = request['wsgiorg.routing_args'][1].copy()

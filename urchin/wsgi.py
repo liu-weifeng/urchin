@@ -43,3 +43,32 @@ class Application(Middleware):
     @webob.dec.wsgify(RequestClass=Request)
     def __call__(self, request):
         pass
+
+
+"""
+class Loader(object):
+
+
+    def __init__(self, config_path=None):
+
+        self.config_path = None
+
+        config_path = config_path or CONF.api_paste_config
+        if not os.path.isabs(config_path):
+            self.config_path = CONF.find_file(config_path)
+        elif os.path.exists(config_path):
+            self.config_path = config_path
+
+        if not self.config_path:
+            raise exception.ConfigNotFound(path=config_path)
+
+    def load_app(self, name):
+
+        try:
+            LOG.debug("Loading app %(name)s from %(path)s",
+                      {'name': name, 'path': self.config_path})
+            return deploy.loadapp("config:%s" % self.config_path, name=name)
+        except LookupError:
+            LOG.exception(_LE("Couldn't lookup app: %s"), name)
+            raise exception.PasteAppNotFound(name=name, path=self.config_path)
+"""

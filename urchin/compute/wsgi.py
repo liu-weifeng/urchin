@@ -13,7 +13,7 @@ class Request(webob.Request):
         super(Request, self).__init__(environ, *args, **kwargs)
 
 
-class WSGIServer(wsgi.Application):
+class InstanceService(wsgi.Application):
     @webob.dec.wsgify(RequestClass=Request)
     def __call__(self, request):
         args = request['wsgiorg.routing_args'][1].copy()

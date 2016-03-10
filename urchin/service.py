@@ -6,6 +6,7 @@ import greenlet
 import webob.dec
 import webob.exc
 from urchin import wsgi
+from urchin.compute import wsgi
 
 class ServiceBase(object):
 
@@ -40,12 +41,10 @@ class WSGIService(object):
         self.topic = None
         self.manager = self._get_manager()
         # self.loader = loader or wsgi.Loader()
-        self.app = self.loader.load_app(name)
+        # self.app = self.loader.load_app(name)
+        self.app = wsgi.InstanceService
         # inherit all compute_api worker counts from osapi_compute
-        if name.startswith('openstack_compute_api'):
-            wname = 'osapi_compute'
-        else:
-            wname = name
+
         self.host = "0.0.0.0"
         self.port = 8080
         self.workers = 1

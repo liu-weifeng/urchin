@@ -99,7 +99,7 @@ class Server(ServiceBase):
         self.app = app
         self._server = None
         self._protocol = protocol
-        self.pool_size = pool_size or self.default_pool_size
+        self.pool_size = pool_size
         self._pool = eventlet.GreenPool(self.pool_size)
         # self._logger = logging.getLogger("nova.%s.wsgi.server" % self.name)
         self._use_ssl = use_ssl
@@ -156,7 +156,7 @@ class Server(ServiceBase):
             'site': self.app,
             'protocol': self._protocol,
             'custom_pool': self._pool,
-            'log': self._logger,
+            # 'log': self._logger,
             # 'log_format': CONF.wsgi_log_format,
             'debug': False,
             # 'keepalive': CONF.wsgi_keep_alive,

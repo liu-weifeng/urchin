@@ -29,6 +29,8 @@ class ProcessLauncher(object):
     def handle_signal(self):
         """Add signal handlers."""
         # TODO(liuwfng): add more siganl handler
+
+        # look up the UNIX SIGS
         signal.signal(2, self._handle_signal)
 
     def _handle_signal(self, signo, frame):
@@ -36,6 +38,7 @@ class ProcessLauncher(object):
         self.running = False
 
     def launch_service(self, service, workers=1):
+        # TODO(liuwfng): service should be registed
         service.start()
 
     def wait(self):
@@ -43,6 +46,13 @@ class ProcessLauncher(object):
         while self.running:
             self.handle_signal()
             time.sleep(1)
+
+    def stop(self):
+        """stop services"""
+
+        # TODO(liuwfng): stop all services
+        pass
+        # self.services.stop()
 
 
 

@@ -6,7 +6,7 @@ import greenlet
 import webob.dec
 import webob.exc
 from urchin import wsgi
-from urchin.compute import wsgi
+import urchin.compute.wsgi
 
 class ServiceBase(object):
 
@@ -39,10 +39,10 @@ class WSGIService(object):
         # nova.service's enabled_apis
         self.binary = 'nova-%s' % name
         self.topic = None
-        self.manager = self._get_manager()
+        # self.manager = self._get_manager()
         # self.loader = loader or wsgi.Loader()
         # self.app = self.loader.load_app(name)
-        self.app = wsgi.InstanceService
+        self.app = urchin.compute.wsgi.InstanceService
         # inherit all compute_api worker counts from osapi_compute
 
         self.host = "0.0.0.0"

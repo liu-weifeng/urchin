@@ -1,4 +1,6 @@
 import socket
+import signal
+import time
 
 import eventlet
 import eventlet.wsgi
@@ -19,8 +21,30 @@ class ServiceBase(object):
 
 class ProcessLauncher(object):
 
+    def __init__(self):
+
+        self.running = True
+        self.handle_signal()
+
+    def handle_signal(self):
+        """Add signal handlers."""
+        # TODO(liuwfng): add more siganl handler
+        signal.signal(2, self._handle_signal)
+
+    def _handle_signal(self, signo, frame):
+        self.sigcaught = signo
+        self.running = False
+
     def launch_service(self, service, workers=1):
         service.start()
+
+    def wait(self):
+
+        while self.running:
+            self.handle_signal()
+            time.sleep(1)
+
+
 
 
 class WSGIService(object):

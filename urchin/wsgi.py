@@ -72,6 +72,7 @@ class Application(Middleware):
     def __call__(self, request):
         pass
 
+
 class Server(ServiceBase):
     """Server class to manage a WSGI server, serving a WSGI application."""
 

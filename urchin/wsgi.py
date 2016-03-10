@@ -73,6 +73,7 @@ class Application(Middleware):
         pass
 
 
+
 class Server(ServiceBase):
     """Server class to manage a WSGI server, serving a WSGI application."""
 
@@ -146,7 +147,7 @@ class Server(ServiceBase):
         # This option isn't available in the OS X version of eventlet
         if hasattr(socket, 'TCP_KEEPIDLE'):
             dup_socket.setsockopt(socket.IPPROTO_TCP,
-                                  socket.TCP_KEEPIDLE)
+                                  socket.TCP_KEEPIDLE, 500)
 
 
         wsgi_kwargs = {

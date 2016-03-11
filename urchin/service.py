@@ -1,12 +1,6 @@
-import socket
 import signal
 import time
 
-import eventlet
-import eventlet.wsgi
-import greenlet
-import webob.dec
-import webob.exc
 from urchin import wsgi
 import urchin.compute.wsgi
 

@@ -49,8 +49,6 @@ class ProcessLauncher(object):
         # self.services.stop()
 
 
-
-
 class WSGIService(object):
     """wsgi server"""
 

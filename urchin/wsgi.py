@@ -73,7 +73,6 @@ class Application(Middleware):
         pass
 
 
-
 class Server(ServiceBase):
     """Server class to manage a WSGI server, serving a WSGI application."""
 

@@ -8,11 +8,13 @@ _SUPPORTED_CONTENT_TYPES = (
     'text', # just for test
 )
 
+
 def get_supported_content_types():
     return _SUPPORTED_CONTENT_TYPES
 
+
 class Request(webob.Request):
-    def get_content_type():
+    def get_content_type(self):
         if "Content-Type" not in self.headers:
             return None
 
@@ -29,6 +31,7 @@ class Request(webob.Request):
 
         return content_type
 
+
 class Resource(object):
 
     def get_body(self, request):
@@ -44,13 +47,9 @@ class Resource(object):
     
     @webob.dec.wsgify
     def __call__(self, request):
-        import pdb;pdb.set_trace()
         content_type, body = self.get_body(request) 
         print content_type
         print body
 
-@webob.dec.wsgify
-def fun(request):
-    print request.body
 
 

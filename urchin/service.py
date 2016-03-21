@@ -68,7 +68,7 @@ class WSGIService(object):
         # self.manager = self._get_manager()
         # self.loader = loader or wsgi.Loader()
         # self.app = self.loader.load_app(name)
-        self.app = urchin.compute.wsgi.InstanceService
+        self.app = urchin.compute.wsgi.InstanceService()
         # inherit all compute_api worker counts from osapi_compute
 
         self.host = "0.0.0.0"

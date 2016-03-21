@@ -1,13 +1,15 @@
 from urchin import service
-from urchin.service import ServiceBase
 
-class Service(ServiceBase):
 
+class Service(service.ServiceBase):
     def __init__(self):
-        self.wsgi = service.WSGIService
+        pass
 
     def start(self):
         pass
+
+    def __call__(self):
+        self.start()
 
 
 

@@ -36,3 +36,14 @@ class ComputeManager(object):
 
     def sys_reboot(self, name):
         pass
+
+    def snapshot(self, name):
+        pass
+
+    def attach_disk(self, name):
+        pass
+
+    def attach_nic(self, name):
+        pass
+
+

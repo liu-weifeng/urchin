@@ -1,6 +1,7 @@
 import sys
 import six
 
+_ = lambda x: x
 
 class UrchinException(Exception):
     msg_fmt = _("An unknown exception occurred.")

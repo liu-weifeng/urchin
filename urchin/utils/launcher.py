@@ -1,4 +1,7 @@
 import eventlet.greenpool
+import webob
+import webob.dec
+import eventlet
 
 
 class ProcessLauncher(object):
@@ -6,12 +9,22 @@ class ProcessLauncher(object):
     def __init__(self):
         self.green_pool = eventlet.greenpool.GreenPool()
 
-    def launcher_service(self, service, workers=1):
+    def launch_service(self, service, workers=1):
         self.green_pool.spawn(service)
 
     def wait(self):
 
         self.green_pool.waitall()
+
+
+# test wsgi
+class Resource(object):
+    
+    @webob.dec.wsgify
+    def __call__(self, request):
+        import pdb;pdb.set_trace()
+        print request.body
+
 
 
 if __name__ == '__main__':

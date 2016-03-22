@@ -1,3 +1,6 @@
+from urchin.utils import launcher
+from urchin.compute import service
+
 
 def main():
     # launcher = ProcessLauncher()
@@ -5,4 +8,14 @@ def main():
     # server = service.WSGIService("compute")
     # launcher.launch_service(server, workers=server.workers or 1)
     # launcher.wait()
-    pass
+    _launcher = launcher.ProcessLauncher()
+    _service = service.Service()
+    _launcher.launch_service(_service)
+    _launcher.wait()
+
+
+# test
+
+if __name__ == "__main__":
+    
+    main()

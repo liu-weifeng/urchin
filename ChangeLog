@@ -1,0 +1,32 @@
+CHANGES
+=======
+
+* delete swp
+* c
+* add wsgi
+* 简单一点
+* x
+* remove .idea
+* xxx
+* add files
+* Initial commit
+* xx
+* delete useless code
+* add signal handler
+* add signal handler
+* set default pool size
+* some change
+* set tcp_keepidle=500
+* modify WSGIService
+* delete _get_menager
+* change wsgi
+* little change
+* add wsgi
+* add wsgi
+* PEP8 format
+* rm .idea
+* add some file
+* change email
+* first commit
+* first commit
+* Initial commit

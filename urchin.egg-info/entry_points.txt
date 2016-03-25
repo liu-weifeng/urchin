@@ -1,3 +1,0 @@
-[console_scripts]
-urchin-compute = urchin.cmd.compute:main
-

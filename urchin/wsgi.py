@@ -4,19 +4,10 @@ import webob.dec
 
 
 class Request(webob.Request):
-
-    def __init__(self, environ, *args, **kwargs):
-        pass
-
-    # def __init__(self, environ, *args, **kwargs):
-    #     if CONF.secure_proxy_ssl_header:
-    #         scheme = environ.get(CONF.secure_proxy_ssl_header)
-    #         if scheme:
-    #             environ['wsgi.url_scheme'] = scheme
-    #     super(Request, self).__init__(environ, *args, **kwargs)
+    pass
 
 
-class Middleware(object):
+class Application(object):
 
     @classmethod
     def factory(cls, global_config, **local_config):
@@ -36,6 +27,7 @@ class Middleware(object):
 
     @webob.dec.wsgify(RequestClass=Request)
     def __call__(self, req):
+        import pdb;pdb.set_trace()
         response = self.process_request(req)
         if response:
             return response

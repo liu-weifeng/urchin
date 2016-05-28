@@ -1,5 +1,6 @@
 import eventlet
 import webob
+import webob.dec
 
 
 class Request(webob.Request):
@@ -15,17 +16,23 @@ class Request(webob.Request):
     #     super(Request, self).__init__(environ, *args, **kwargs)
 
 
-class Application(object):
-    """Base WSGI application wrapper. Subclasses need to implement __call__."""
+class Middleware(object):
 
-    def __init__(self, app):
-        self.application = app
+    @classmethod
+    def factory(cls, global_config, **local_config):
 
-    def process_request(self, request):
-        pass
+        def _factory(app):
+            return cls(app, **local_config)
+        return _factory
+
+    def __init__(self, application):
+        self.application = application
+
+    def process_request(self, req):
+        return None
 
     def process_response(self, response):
-        pass
+        return response
 
     @webob.dec.wsgify(RequestClass=Request)
     def __call__(self, req):

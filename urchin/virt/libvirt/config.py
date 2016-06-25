@@ -27,14 +27,15 @@ import time
 
 from lxml import etree
 #from oslo_log import log as logging
-#from oslo_utils import units
+#from oslo_utils import unitspci_utils
 import six
 
 #from nova import exception
 #from nova.i18n import _
-#from nova.pci import utils as pci_utils
+#from nova.pci import utils as
 #from nova.virt import hardware
 
+_ = lambda x: x
 
 #LOG = logging.getLogger(__name__)
 
